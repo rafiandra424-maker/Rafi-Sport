@@ -1,0 +1,2625 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#10b981" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RAFI SPORT" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>RAFI SPORT v5 — Personal Fitness, Custom Log & Monthly Report</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #121826;
+      --surface-2: #192234;
+      --border: #273349;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --radius: 16px;
+
+      /* Dynamic Theme Variables per Tab */
+      --theme-main: #10b981;
+      --theme-main-hover: #059669;
+      --theme-soft: rgba(16, 185, 129, 0.14);
+      --theme-border: rgba(16, 185, 129, 0.38);
+      --theme-grad: linear-gradient(135deg, #10b981, #06b6d4);
+      --theme-btn-text: #042f2e;
+
+      /* Feature Specific Colors */
+      --c-dash: #10b981;
+      --c-rep: #06b6d4;
+      --c-plan: #3b82f6;
+      --c-nut: #f97316;
+      --c-tools: #a855f7;
+      --c-gal: #ec4899;
+    }
+
+    body[data-theme="dashboard"] {
+      --theme-main: #10b981;
+      --theme-main-hover: #059669;
+      --theme-soft: rgba(16, 185, 129, 0.14);
+      --theme-border: rgba(16, 185, 129, 0.4);
+      --theme-grad: linear-gradient(135deg, #10b981, #06b6d4);
+      --theme-btn-text: #042f2e;
+    }
+    body[data-theme="report"] {
+      --theme-main: #06b6d4;
+      --theme-main-hover: #0891b2;
+      --theme-soft: rgba(6, 182, 212, 0.15);
+      --theme-border: rgba(6, 182, 212, 0.42);
+      --theme-grad: linear-gradient(135deg, #06b6d4, #3b82f6);
+      --theme-btn-text: #ecfeff;
+    }
+    body[data-theme="planner"] {
+      --theme-main: #3b82f6;
+      --theme-main-hover: #2563eb;
+      --theme-soft: rgba(59, 130, 246, 0.15);
+      --theme-border: rgba(59, 130, 246, 0.42);
+      --theme-grad: linear-gradient(135deg, #3b82f6, #6366f1);
+      --theme-btn-text: #eff6ff;
+    }
+    body[data-theme="nutrition"] {
+      --theme-main: #f97316;
+      --theme-main-hover: #ea580c;
+      --theme-soft: rgba(249, 115, 22, 0.15);
+      --theme-border: rgba(249, 115, 22, 0.42);
+      --theme-grad: linear-gradient(135deg, #f97316, #eab308);
+      --theme-btn-text: #fff7ed;
+    }
+    body[data-theme="tools"] {
+      --theme-main: #a855f7;
+      --theme-main-hover: #9333ea;
+      --theme-soft: rgba(168, 85, 247, 0.15);
+      --theme-border: rgba(168, 85, 247, 0.42);
+      --theme-grad: linear-gradient(135deg, #a855f7, #6366f1);
+      --theme-btn-text: #faf5ff;
+    }
+    body[data-theme="gallery"] {
+      --theme-main: #ec4899;
+      --theme-main-hover: #db2777;
+      --theme-soft: rgba(236, 72, 153, 0.15);
+      --theme-border: rgba(236, 72, 153, 0.42);
+      --theme-grad: linear-gradient(135deg, #ec4899, #f43f5e);
+      --theme-btn-text: #fdf2f8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, var(--theme-soft), transparent 36%),
+        radial-gradient(circle at 88% 18%, rgba(56, 189, 248, 0.08), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.35s ease;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Header & Colorful Nav */
+    header {
+      background: rgba(18, 24, 38, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+    }
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 900;
+      font-size: 1.16rem;
+      letter-spacing: 0.6px;
+    }
+    .brand-badge {
+      background: var(--theme-grad);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 900;
+      box-shadow: 0 4px 14px var(--theme-soft);
+      transition: all 0.3s ease;
+    }
+    .pwa-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+      width: 100%;
+    }
+    nav::-webkit-scrollbar { display: none; }
+    @media (min-width: 960px) {
+      nav { width: auto; overflow-x: visible; }
+    }
+    .nav-btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 11px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.81rem;
+      transition: all 0.22s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .nav-btn[data-tab="dashboard"] .nav-dot { background: var(--c-dash); }
+    .nav-btn[data-tab="report"] .nav-dot { background: var(--c-rep); }
+    .nav-btn[data-tab="planner"] .nav-dot { background: var(--c-plan); }
+    .nav-btn[data-tab="nutrition"] .nav-dot { background: var(--c-nut); }
+    .nav-btn[data-tab="tools"] .nav-dot { background: var(--c-tools); }
+    .nav-btn[data-tab="gallery"] .nav-dot { background: var(--c-gal); }
+
+    .nav-btn:hover { color: var(--text); transform: translateY(-1px); }
+
+    .nav-btn[data-tab="dashboard"].active {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.55);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.18);
+    }
+    .nav-btn[data-tab="report"].active {
+      background: rgba(6, 182, 212, 0.18);
+      color: #67e8f9;
+      border-color: rgba(6, 182, 212, 0.55);
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.18);
+    }
+    .nav-btn[data-tab="planner"].active {
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+      border-color: rgba(59, 130, 246, 0.55);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.18);
+    }
+    .nav-btn[data-tab="nutrition"].active {
+      background: rgba(249, 115, 22, 0.18);
+      color: #fdba74;
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.18);
+    }
+    .nav-btn[data-tab="tools"].active {
+      background: rgba(168, 85, 247, 0.18);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.55);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.18);
+    }
+    .nav-btn[data-tab="gallery"].active {
+      background: rgba(236, 72, 153, 0.18);
+      color: #f9a8d4;
+      border-color: rgba(236, 72, 153, 0.55);
+      box-shadow: 0 0 16px rgba(236, 72, 153, 0.18);
+    }
+
+    /* Global Date Filter Bar */
+    .date-toolbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--theme-main);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .date-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .date-pill-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--theme-main);
+    }
+
+    /* Install App Banner */
+    .install-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .install-banner.show { display: flex; }
+
+    /* Layout */
+    main {
+      max-width: 1180px;
+      width: 100%;
+      margin: 18px auto;
+      padding: 0 16px 60px;
+      flex: 1;
+    }
+    .section { display: none; animation: fadeIn 0.25s ease; }
+    .section.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      border-left: 5px solid var(--theme-main);
+      padding-left: 14px;
+      margin-bottom: 18px;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 3px; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; }
+
+    /* Greeting + Live Clock & Date Banner */
+    .greeting-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.14), rgba(59, 130, 246, 0.12));
+      border: 1px solid rgba(16, 185, 129, 0.42);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .greeting-title { font-size: 1.4rem; font-weight: 800; color: var(--text); }
+    .greeting-sub { color: #cbd5e1; font-size: 0.88rem; margin-top: 3px; }
+
+    .clock-widget {
+      background: rgba(9, 13, 22, 0.65);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 14px;
+      padding: 10px 14px;
+      text-align: right;
+      min-width: 195px;
+    }
+    .live-clock {
+      font-size: 1.45rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      background: linear-gradient(90deg, #34d399, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+    .live-date {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Cards & Colorful Accents */
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; margin-bottom: 18px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--theme-main);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+    }
+    .stat-emerald { border-top-color: #10b981; background: linear-gradient(180deg, rgba(16,185,129,0.08), var(--surface) 45%); }
+    .stat-blue    { border-top-color: #3b82f6; background: linear-gradient(180deg, rgba(59,130,246,0.08), var(--surface) 45%); }
+    .stat-orange  { border-top-color: #f97316; background: linear-gradient(180deg, rgba(249,115,22,0.08), var(--surface) 45%); }
+    .stat-cyan    { border-top-color: #06b6d4; background: linear-gradient(180deg, rgba(6,182,212,0.08), var(--surface) 45%); }
+    .stat-purple  { border-top-color: #a855f7; background: linear-gradient(180deg, rgba(168,85,247,0.08), var(--surface) 45%); }
+    .stat-pink    { border-top-color: #ec4899; background: linear-gradient(180deg, rgba(236,72,153,0.08), var(--surface) 45%); }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .stat-label { color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; }
+    .stat-val { font-size: 1.55rem; font-weight: 800; margin: 4px 0; }
+    .stat-sub { font-size: 0.8rem; color: var(--theme-main); font-weight: 600; }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: var(--surface-2);
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill {
+      background: var(--theme-grad);
+      height: 100%;
+      width: 0%;
+      transition: width 0.35s ease;
+    }
+
+    /* Mode Switcher Pills inside Card */
+    .mode-pills {
+      display: flex;
+      gap: 6px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+    .mode-pill-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .mode-pill-btn.active {
+      background: var(--theme-grad);
+      color: var(--theme-btn-text);
+      box-shadow: 0 2px 10px var(--theme-soft);
+    }
+
+    /* Forms & Inputs */
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+    input, select, textarea {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 11px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--theme-main);
+      box-shadow: 0 0 0 2px var(--theme-soft);
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--theme-grad);
+      color: var(--theme-btn-text);
+      border: none;
+      padding: 9px 15px;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.86rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px var(--theme-soft);
+    }
+    .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn-secondary:hover { border-color: var(--theme-main); }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      box-shadow: none;
+    }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.3); }
+    .btn-sm { padding: 6px 11px; font-size: 0.8rem; }
+
+    /* Lists & Badges */
+    .list-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 11px 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 700;
+    }
+    .badge-green  { background: rgba(16, 185, 129, 0.18); color: #6ee7b7; }
+    .badge-blue   { background: rgba(59, 130, 246, 0.18); color: #93c5fd; }
+    .badge-orange { background: rgba(249, 115, 22, 0.18); color: #fdba74; }
+    .badge-purple { background: rgba(168, 85, 247, 0.18); color: #d8b4fe; }
+    .badge-pink   { background: rgba(236, 72, 153, 0.18); color: #f9a8d4; }
+    .badge-amber  { background: rgba(245, 158, 11, 0.18); color: #fcd34d; }
+    .badge-red    { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+    .badge-muted  { background: rgba(148, 163, 184, 0.16); color: #cbd5e1; }
+
+    /* Weekly Schedule Pills */
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .day-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px;
+    }
+    .day-card.today { border-color: #3b82f6; box-shadow: 0 0 0 1px rgba(59,130,246,0.4); background: rgba(59, 130, 246, 0.08); }
+    .day-name { font-weight: 700; font-size: 0.86rem; margin-bottom: 4px; }
+    .day-plan { font-size: 0.8rem; color: var(--muted); }
+
+    /* Sheet / Report Table */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    table.sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      min-width: 680px;
+    }
+    table.sheet-table th {
+      background: #172033;
+      color: #67e8f9;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    table.sheet-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(39, 51, 73, 0.65);
+      color: var(--text);
+    }
+    table.sheet-table tr:nth-child(even) td {
+      background: rgba(25, 34, 52, 0.45);
+    }
+    table.sheet-table tr.total-row td {
+      background: rgba(6, 182, 212, 0.14);
+      font-weight: 800;
+      color: #67e8f9;
+      border-top: 2px solid rgba(6, 182, 212, 0.45);
+    }
+
+    /* Gallery */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    .gallery-card {
+      background: var(--surface-2);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .gallery-card img {
+      width: 100%;
+      height: 195px;
+      object-fit: cover;
+      display: block;
+      background: #0f172a;
+    }
+    .gallery-meta { padding: 12px; font-size: 0.84rem; }
+
+    /* Timer Banner */
+    .timer-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid #06b6d4;
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .timer-display { font-size: 1.45rem; font-weight: 900; font-variant-numeric: tabular-nums; color: #38bdf8; }
+
+    /* Helper box */
+    .calc-preview {
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.32);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.83rem;
+      margin-bottom: 12px;
+      color: #fed7aa;
+    }
+
+    /* Date History Pills */
+    .history-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .date-chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .date-chip.active {
+      background: var(--theme-soft);
+      color: var(--text);
+      border-color: var(--theme-main);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Print / Save PDF Styling */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+      }
+      header, .install-banner, .date-toolbar, .no-print, footer {
+        display: none !important;
+      }
+      main {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .section { display: none !important; }
+      #report { display: block !important; }
+      .card {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+      }
+      .stat-label, .subtitle { color: #475569 !important; }
+      table.sheet-table th {
+        background: #e2e8f0 !important;
+        color: #0f172a !important;
+        border: 1px solid #94a3b8 !important;
+      }
+      table.sheet-table td {
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        background: #ffffff !important;
+      }
+      table.sheet-table tr.total-row td {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dashboard">
+
+<header>
+  <div class="header-inner">
+    <div class="brand-row">
+      <div class="brand">
+        <span class="brand-badge">RS</span>
+        <span>RAFI SPORT</span>
+      </div>
+      <span class="pwa-pill" id="pwaStatusPill">DB Tersimpan</span>
+    </div>
+    <nav id="mainNav">
+      <button class="nav-btn active" data-tab="dashboard"><span class="nav-dot"></span>Dashboard</button>
+      <button class="nav-btn" data-tab="report"><span class="nav-dot"></span>Sheet Report</button>
+      <button class="nav-btn" data-tab="planner"><span class="nav-dot"></span>Workout Planner</button>
+      <button class="nav-btn" data-tab="nutrition"><span class="nav-dot"></span>Nutrition Tracker</button>
+      <button class="nav-btn" data-tab="tools"><span class="nav-dot"></span>Reminder & BMI</button>
+      <button class="nav-btn" data-tab="gallery"><span class="nav-dot"></span>Progress Gallery</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- BANNER INSTALL KE LAYAR UTAMA HP -->
+  <div class="install-banner" id="installBanner">
+    <div>
+      <div style="font-weight:800;font-size:0.92rem;">Install RAFI SPORT ke Layar Utama HP</div>
+      <div style="font-size:0.8rem;color:#cbd5e1;">Buka seperti aplikasi asli tanpa bar browser dan tetap bisa dipakai offline.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn btn-sm" id="installAppBtn">Install Aplikasi</button>
+      <button class="btn btn-sm btn-secondary" onclick="dismissInstallBanner()">Nanti</button>
+    </div>
+  </div>
+
+  <!-- BAR PILIH TANGGAL AKTIF (RIWAYAT HARIAN GLOBAL) -->
+  <div class="date-toolbar">
+    <div class="date-toolbar-left">
+      <span class="date-pill-label">Tanggal Catatan:</span>
+      <input type="date" id="selectedDateInput" style="width:155px;padding:6px 10px;font-size:0.84rem;" onchange="onChangeSelectedDate()" />
+      <button class="btn btn-sm btn-secondary" onclick="jumpToToday()">Hari Ini</button>
+      <span class="badge badge-green" id="selectedDateBadge">Hari Ini</span>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-sm btn-secondary" onclick="exportBackupJSON()">Backup Data (.json)</button>
+      <label class="btn btn-sm btn-secondary" style="margin:0;cursor:pointer;">
+        Restore Data
+        <input type="file" id="importBackupInput" accept=".json" style="display:none;" onchange="importBackupJSON(event)" />
+      </label>
+    </div>
+  </div>
+
+  <!-- 1. DASHBOARD -->
+  <section id="dashboard" class="section active">
+    <div class="greeting-banner">
+      <div>
+        <div class="greeting-title" id="greetingHeading">Selamat Malam, Afii!</div>
+        <div class="greeting-sub">Ringkasan harian, timer latihan, dan pintasan ke Sheet Report bulanan & custom log.</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;">
+          <input type="text" id="userNameInput" placeholder="Ubah nama panggilan" style="width:155px;padding:7px 10px;font-size:0.83rem;" />
+          <button class="btn btn-sm btn-secondary" onclick="updateUserName()">Simpan Nama</button>
+          <button class="btn btn-sm" onclick="switchTab('report')">Buka Sheet Report & PDF</button>
+        </div>
+      </div>
+
+      <div class="clock-widget">
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.8px;color:#6ee7b7;font-weight:700;">Waktu & Tanggal Saat Ini</div>
+        <div class="live-clock" id="liveClockDisplay">00:00:00</div>
+        <div class="live-date" id="liveDateDisplay">Memuat tanggal...</div>
+      </div>
+    </div>
+
+    <div class="timer-box">
+      <div>
+        <div style="font-weight:700;">Rest Timer Latihan</div>
+        <div style="font-size:0.8rem;color:var(--muted);">Hitung waktu istirahat antar set</div>
+      </div>
+      <div class="timer-display" id="timerDisplay">01:30</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-secondary" onclick="setTimer(60)">60s</button>
+        <button class="btn btn-sm btn-secondary" onclick="setTimer(90)">90s</button>
+        <button class="btn btn-sm" onclick="toggleTimer()" id="timerToggleBtn">Mulai</button>
+        <button class="btn btn-sm btn-secondary" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+
+    <div class="grid-4">
+      <div class="card stat-emerald">
+        <div class="stat-label">Sesi Selesai Minggu Ini</div>
+        <div class="stat-val" id="dashWeeklyCount">0 / 4 Sesi</div>
+        <div class="progress-wrap"><div class="progress-fill" id="dashWeeklyBar"></div></div>
+        <div class="stat-sub" style="margin-top:8px;color:#34d399;" id="dashWeeklyNote">Ayo mulai sesi pertamamu!</div>
+      </div>
+
+      <div class="card stat-blue">
+        <div class="stat-label">Jadwal Latihan (<span id="dashDayNameLabel">Hari Ini</span>)</div>
+        <div class="stat-val" style="font-size:1.2rem;" id="dashTodayTitle">-</div>
+        <div class="stat-sub" style="color:#60a5fa;" id="dashTodaySub">Cek Workout Planner</div>
+      </div>
+
+      <div class="card stat-orange">
+        <div class="stat-label">Kalori Terbakar (<span id="dashBurnDateLabel">Tanggal Ini</span>)</div>
+        <div class="stat-val" id="dashBurnedCal">0 kcal</div>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <input type="number" id="quickBurnInput" placeholder="+ kcal" style="padding:6px 8px;font-size:0.82rem;" />
+          <button class="btn btn-sm" onclick="addBurnedCal()">Tambah</button>
+        </div>
+      </div>
+
+      <div class="card stat-cyan">
+        <div class="stat-label">Asupan Kalori & Air (<span id="dashIntakeDateLabel">Tanggal Ini</span>)</div>
+        <div class="stat-val" style="font-size:1.2rem;" id="dashIntakeSummary">0 kcal • 0 ml</div>
+        <div class="stat-sub" style="color:#22d3ee;" id="dashWaterRemainSub">Kurang 2000 ml lagi</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card stat-blue">
+        <div class="card-title">
+          <span>Jadwal Latihan & Tandai Selesai (<span id="dashCheckDateLabel">Hari Ini</span>)</span>
+          <button class="btn btn-sm" id="completeWorkoutBtn" onclick="completeSelectedDateWorkout()">Tandai Selesai</button>
+        </div>
+        <div id="dashTodayExercises"></div>
+      </div>
+
+      <div class="card stat-pink">
+        <div class="card-title">
+          <span>Ringkasan Aktivitas Per Tanggal</span>
+          <button class="btn btn-sm btn-secondary" onclick="switchTab('report')">Sheet Report Bulanan</button>
+        </div>
+        <div id="dashDateActivityLog"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. SHEET REPORT & MONTHLY PDF -->
+  <section id="report" class="section">
+    <div class="section-header">
+      <h1>Sheet Report & Laporan Bulanan (PDF)</h1>
+      <p class="subtitle">Kesimpulan lengkap setiap kegiatan (Workout, Nutrisi, Air Putih, Kalori Terbakar, & BMI) per bulan dengan ekspor PDF.</p>
+    </div>
+
+    <div class="card stat-cyan no-print" style="margin-bottom:18px;">
+      <div class="card-title">
+        <span>Filter Periode Laporan Bulanan</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <input type="month" id="reportMonthInput" style="width:170px;padding:6px 10px;" onchange="renderReportSheet()" />
+          <button class="btn btn-sm btn-secondary" onclick="setReportCurrentMonth()">Bulan Ini</button>
+          <button class="btn btn-sm" onclick="downloadMonthlyReportPDF()">Download / Cetak Report PDF</button>
+        </div>
+      </div>
+      <div style="font-size:0.83rem;color:var(--muted);">
+        Tip: Klik <strong>Download / Cetak Report PDF</strong> lalu pilih <strong>Save as PDF / Simpan sebagai PDF</strong> di browser HP maupun laptop untuk menyimpan laporan bulanan.
+      </div>
+    </div>
+
+    <!-- Header Khusus Saat Dicetak ke PDF -->
+    <div class="card stat-cyan" style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.8px;color:#67e8f9;font-weight:800;">RAFI SPORT — MONTHLY ACTIVITY SHEET REPORT</div>
+          <h2 style="font-size:1.3rem;margin-top:2px;" id="reportTitleHeading">Laporan Bulanan: -</h2>
+          <div style="font-size:0.84rem;color:var(--muted);" id="reportUserMeta">Atlet / Pengguna: Afii</div>
+        </div>
+        <span class="badge badge-blue" id="reportActiveDaysBadge">0 Hari Aktif Tercatat</span>
+      </div>
+    </div>
+
+    <!-- 4 Kartu Kesimpulan Bulanan -->
+    <div class="grid-4">
+      <div class="card stat-emerald">
+        <div class="stat-label">Total Sesi & Log Latihan</div>
+        <div class="stat-val" id="repTotalWorkouts">0 Sesi</div>
+        <div class="stat-sub" style="color:#34d399;" id="repWorkoutDetailSub">0 gerakan dicatat</div>
+      </div>
+      <div class="card stat-orange">
+        <div class="stat-label">Total & Rata-Rata Kalori Masuk</div>
+        <div class="stat-val" id="repTotalCalIn">0 kcal</div>
+        <div class="stat-sub" style="color:#fdba74;" id="repAvgCalInSub">Rata-rata 0 kcal/hari</div>
+      </div>
+      <div class="card stat-blue">
+        <div class="stat-label">Total Kalori Terbakar</div>
+        <div class="stat-val" id="repTotalCalBurn">0 kcal</div>
+        <div class="stat-sub" style="color:#93c5fd;" id="repNetCalSub">Selisih bersih: 0 kcal</div>
+      </div>
+      <div class="card stat-cyan">
+        <div class="stat-label">Total Konsumsi Air & Makro</div>
+        <div class="stat-val" id="repTotalWater">0 L</div>
+        <div class="stat-sub" style="color:#67e8f9;" id="repMacroSub">P: 0g • K: 0g • L: 0g</div>
+      </div>
+    </div>
+
+    <!-- Kesimpulan Otomatis Setiap Kegiatan -->
+    <div class="card stat-emerald" style="margin-bottom:18px;">
+      <div class="card-title">Kesimpulan Evaluasi Setiap Kegiatan Bulan Ini</div>
+      <div id="reportConclusionBox" style="display:grid;gap:8px;font-size:0.88rem;"></div>
+    </div>
+
+    <!-- Tabel Sheet Rekap Harian dalam 1 Bulan -->
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">
+        <span>Sheet Rekapitulasi Harian (<span id="repSheetMonthLabel">-</span>)</span>
+        <span class="badge badge-green">Otomatis Terhitung</span>
+      </div>
+      <div class="table-wrap">
+        <table class="sheet-table">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Status Sesi</th>
+              <th>Log Gerakan</th>
+              <th>Kalori Masuk</th>
+              <th>Protein / Karbo / Lemak</th>
+              <th>Air Putih</th>
+              <th>Kalori Terbakar</th>
+              <th>BMI / Berat</th>
+            </tr>
+          </thead>
+          <tbody id="reportDailySheetBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sheet Detail Log Latihan Bulanan -->
+    <div class="card">
+      <div class="card-title">
+        <span>Sheet Detail Latihan & Beban Bulan Ini</span>
+        <span class="badge badge-blue" id="repExSheetCount">0 Baris</span>
+      </div>
+      <div class="table-wrap">
+        <table class="sheet-table">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Nama Gerakan / Aktivitas</th>
+              <th>Kategori / Mode</th>
+              <th>Detail (Set × Reps / Durasi)</th>
+              <th>Beban / Intensitas</th>
+              <th>Catatan</th>
+            </tr>
+          </thead>
+          <tbody id="reportExerciseSheetBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. WORKOUT PLANNER (DENGAN MODE CUSTOM MANUAL) -->
+  <section id="planner" class="section">
+    <div class="section-header">
+      <h1>Workout Planner & Custom Workout Log</h1>
+      <p class="subtitle">Atur jadwal mingguan atau catat latihan secara <strong>Custom / Manual</strong> (bebas jenis olahraga, durasi, set, reps, atau beban).</p>
+    </div>
+
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-title">Program Latihan Mingguan</div>
+      <div class="week-grid" id="weekOverview"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Atur / Tambah Jadwal Latihan (Custom Fokus)</div>
+        <div class="form-row">
+          <div>
+            <label>Hari</label>
+            <select id="planDay">
+              <option value="Senin">Senin</option>
+              <option value="Selasa">Selasa</option>
+              <option value="Rabu">Rabu</option>
+              <option value="Kamis">Kamis</option>
+              <option value="Jumat">Jumat</option>
+              <option value="Sabtu">Sabtu</option>
+              <option value="Minggu">Minggu</option>
+            </select>
+          </div>
+          <div>
+            <label>Tipe Hari</label>
+            <select id="planType">
+              <option value="Latihan">Hari Latihan</option>
+              <option value="Istirahat">Hari Istirahat (Rest Day)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Pilih Fokus Template</label>
+            <select id="planFocusSelect" onchange="syncCustomPlanFocus()">
+              <option value="Push (Chest, Shoulder, Triceps)">Push (Chest, Shoulder, Triceps)</option>
+              <option value="Pull (Back, Biceps)">Pull (Back, Biceps)</option>
+              <option value="Legs & Core">Legs & Core</option>
+              <option value="Upper Body">Upper Body</option>
+              <option value="Full Body & Cardio">Full Body & Cardio</option>
+              <option value="Active Recovery / Rest">Active Recovery / Rest</option>
+              <option value="custom">-- Custom / Ketik Sendiri --</option>
+            </select>
+          </div>
+          <div>
+            <label>Nama Fokus Latihan (Custom)</label>
+            <input type="text" id="planFocusCustom" value="Push (Chest, Shoulder, Triceps)" placeholder="Ketik fokus latihan sendiri..." />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Jam Pengingat</label>
+            <input type="time" id="planTime" value="17:00" />
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label>Daftar Gerakan & Target Set/Reps (pisahkan dengan koma)</label>
+          <textarea id="planExercises" rows="3" placeholder="Contoh: Bench Press 4x10, Incline Dumbbell Press 3x12, Lateral Raise 3x15"></textarea>
+        </div>
+        <button class="btn" onclick="saveWorkoutDay()">Simpan Jadwal Hari Ini</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Detail Jadwal per Hari (Edit / Hapus)</div>
+        <div id="plannerDetailList"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Catat Hasil Latihan (Preset Gym / Custom Manual)</div>
+
+        <div class="mode-pills">
+          <button type="button" class="mode-pill-btn active" id="woModeGymBtn" onclick="setWorkoutLogMode('gym')">Mode Gym (Set × Reps)</button>
+          <button type="button" class="mode-pill-btn" id="woModeCustomBtn" onclick="setWorkoutLogMode('custom')">Mode Custom / Manual Bebas</button>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Nama Gerakan / Jenis Olahraga</label>
+            <input type="text" id="logExName" placeholder="Contoh: Bench Press / Lari / Futsal" />
+          </div>
+          <div>
+            <label>Tanggal Latihan</label>
+            <input type="date" id="logExDate" />
+          </div>
+        </div>
+
+        <!-- Input Mode Gym -->
+        <div id="woGymFields" class="form-row">
+          <div>
+            <label>Jumlah Set</label>
+            <input type="number" id="logExSets" placeholder="4" min="1" />
+          </div>
+          <div>
+            <label>Repetisi (Reps) per Set</label>
+            <input type="number" id="logExReps" placeholder="10" min="1" />
+          </div>
+          <div>
+            <label>Beban (kg) - Opsional</label>
+            <input type="number" id="logExWeight" placeholder="40" step="0.5" min="0" />
+          </div>
+        </div>
+
+        <!-- Input Mode Custom Manual -->
+        <div id="woCustomFields" class="form-row" style="display:none;">
+          <div>
+            <label>Kategori Custom</label>
+            <input type="text" id="logCustomCategory" placeholder="Contoh: Kardio / Calisthenics / Renang" />
+          </div>
+          <div>
+            <label>Target / Durasi / Volume Manual</label>
+            <input type="text" id="logCustomVolume" placeholder="Contoh: 45 menit / 5 km / 100 push-up" />
+          </div>
+          <div>
+            <label>Kalori Terbakar (kcal) - Opsional</label>
+            <input type="number" id="logCustomBurn" placeholder="250" min="0" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label>Catatan Tambahan (Opsional)</label>
+          <input type="text" id="logExNotes" placeholder="Contoh: Pace stabil, detak jantung terjaga" />
+        </div>
+        <button class="btn" onclick="addExerciseLog()">Simpan Hasil Latihan</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>Riwayat Hasil Latihan Per Tanggal</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <select id="logExFilterMode" style="padding:4px 8px;font-size:0.78rem;width:auto;" onchange="renderExerciseLogs()">
+              <option value="selected">Tanggal Terpilih</option>
+              <option value="all">Semua Tanggal</option>
+            </select>
+            <span class="badge badge-blue" id="logExCountBadge">0 Catatan</span>
+          </div>
+        </div>
+        <div class="history-chips" id="exerciseDateChips"></div>
+        <div id="exerciseLogList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. NUTRITION TRACKER (DENGAN MODE CUSTOM MANUAL) -->
+  <section id="nutrition" class="section">
+    <div class="section-header">
+      <h1>Nutrition Tracker (Otomatis & Custom Manual)</h1>
+      <p class="subtitle">Pilih makanan dari daftar otomatis atau gunakan <strong>Mode Custom / Manual</strong> untuk mencatat menu, porsi, kalori, dan makro secara bebas.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">
+        <span>Riwayat Tanggal Tersimpan (Klik tanggal untuk melihat catatan hari itu)</span>
+        <span class="badge badge-orange" id="nutActiveDateLabel">-</span>
+      </div>
+      <div class="history-chips" id="nutritionDateChips"></div>
+    </div>
+
+    <div class="grid-4">
+      <div class="card stat-orange">
+        <div class="stat-label">Total Kalori (<span class="nutDateShort">Hari Ini</span>)</div>
+        <div class="stat-val" id="nutCalVal">0 kcal</div>
+        <div class="stat-sub">Target Harian: <span id="nutCalTargetLabel">2200</span> kcal</div>
+        <div class="progress-wrap"><div class="progress-fill" id="nutCalBar"></div></div>
+      </div>
+      <div class="card stat-emerald">
+        <div class="stat-label">Total Protein</div>
+        <div class="stat-val" id="nutProVal">0 g</div>
+        <div class="stat-sub" style="color:#34d399;">Target: 140 g</div>
+      </div>
+      <div class="card stat-blue">
+        <div class="stat-label">Total Karbohidrat</div>
+        <div class="stat-val" id="nutCarbVal">0 g</div>
+        <div class="stat-sub" style="color:#60a5fa;">Target: 250 g</div>
+      </div>
+      <div class="card stat-pink">
+        <div class="stat-label">Total Lemak</div>
+        <div class="stat-val" id="nutFatVal">0 g</div>
+        <div class="stat-sub" style="color:#f472b6;">Target: 65 g</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Catat Makanan (Hitung Otomatis / Custom Manual)</div>
+
+        <div class="mode-pills">
+          <button type="button" class="mode-pill-btn active" id="nutModePresetBtn" onclick="setNutritionInputMode('preset')">Hitung Otomatis (Gram)</button>
+          <button type="button" class="mode-pill-btn" id="nutModeManualBtn" onclick="setNutritionInputMode('manual')">Custom / Catat Manual</button>
+        </div>
+
+        <div id="nutPresetRow" class="form-row">
+          <div>
+            <label>Pilih Bahan Makanan (Per 100g)</label>
+            <select id="foodPresetSelect" onchange="applyFoodPreset()">
+              <option value="custom">-- Pilih Makanan --</option>
+              <optgroup label="Karbohidrat (Nasi, Umbi, Roti)">
+                <option value="nasi_putih">Nasi Putih (130 kcal, P 2.7g, K 28g, L 0.3g)</option>
+                <option value="nasi_merah">Nasi Merah (111 kcal, P 2.6g, K 23g, L 0.9g)</option>
+                <option value="kentang_rebus">Kentang Rebus (87 kcal, P 1.9g, K 20g, L 0.1g)</option>
+                <option value="oatmeal">Oatmeal Kering (389 kcal, P 16.9g, K 66g, L 6.9g)</option>
+                <option value="roti_gandum">Roti Gandum (247 kcal, P 13g, K 41g, L 3.4g)</option>
+              </optgroup>
+              <optgroup label="Protein (Ayam, Telur, Ikan, Tempe)">
+                <option value="dada_ayam">Dada Ayam Matang (165 kcal, P 31g, K 0g, L 3.6g)</option>
+                <option value="telur_rebus">Telur Ayam Rebus (155 kcal, P 13g, K 1.1g, L 11g)</option>
+                <option value="ikan_salmon">Ikan Salmon / Kembung (208 kcal, P 20g, K 0g, L 13g)</option>
+                <option value="tempe">Tempe Kukus/Bakar (192 kcal, P 20g, K 7.6g, L 11g)</option>
+                <option value="tahu">Tahu Putih (76 kcal, P 8g, K 1.9g, L 4.8g)</option>
+              </optgroup>
+              <optgroup label="Sayuran & Buah">
+                <option value="brokoli">Brokoli / Bayam Rebus (35 kcal, P 2.4g, K 7g, L 0.4g)</option>
+                <option value="pisang">Buah Pisang (89 kcal, P 1.1g, K 23g, L 0.3g)</option>
+                <option value="apel">Buah Apel (52 kcal, P 0.3g, K 14g, L 0.2g)</option>
+                <option value="alpukat">Buah Alpukat (160 kcal, P 2g, K 8.5g, L 15g)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label>Berat Porsi (gram)</label>
+            <input type="number" id="foodGrams" value="100" min="1" oninput="recalcFoodByGrams()" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Nama Makanan / Menu Custom</label>
+            <input type="text" id="foodName" placeholder="Contoh: Nasi Padang / Ayam Bakar / Whey Protein" />
+          </div>
+          <div>
+            <label>Kategori / Waktu Makan</label>
+            <input type="text" id="foodCategoryCustom" list="foodCategorySuggestions" value="Menu Utama" placeholder="Ketik kategori bebas..." />
+            <datalist id="foodCategorySuggestions">
+              <option value="Sarapan"></option>
+              <option value="Makan Siang"></option>
+              <option value="Makan Malam"></option>
+              <option value="Snack / Pre-Workout"></option>
+              <option value="Karbohidrat"></option>
+              <option value="Protein"></option>
+              <option value="Sayuran & Buah"></option>
+            </datalist>
+          </div>
+          <div id="customPortionBox" style="display:none;">
+            <label>Ukuran Porsi Manual (Opsional)</label>
+            <input type="text" id="foodCustomPortion" placeholder="Contoh: 1 porsi / 2 potong / 1 scoop" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Kalori (kcal) *</label>
+            <input type="number" id="foodCal" step="0.1" placeholder="Isi kalori" />
+          </div>
+          <div>
+            <label>Protein (g)</label>
+            <input type="number" id="foodPro" step="0.1" placeholder="0" />
+          </div>
+          <div>
+            <label>Karbohidrat (g)</label>
+            <input type="number" id="foodCarb" step="0.1" placeholder="0" />
+          </div>
+          <div>
+            <label>Lemak (g)</label>
+            <input type="number" id="foodFat" step="0.1" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="calc-preview" id="foodCalcHint">
+          Catatan akan disimpan ke tanggal: <strong id="foodTargetDateText">-</strong>.
+        </div>
+
+        <button class="btn" onclick="addFood()">Tambahkan ke Catatan Makanan</button>
+      </div>
+
+      <div class="card stat-cyan">
+        <div class="card-title">
+          <span>Tracker & Riwayat Konsumsi Air Putih</span>
+          <span class="badge badge-blue" id="waterTargetBadge">Target: 2000 ml</span>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:12px;">
+          <div style="background:var(--surface-2);padding:12px;border-radius:10px;border:1px solid var(--border);">
+            <div class="stat-label">Sudah Diminum</div>
+            <div class="stat-val" style="font-size:1.4rem;color:#34d399;" id="waterConsumedVal">0 ml</div>
+            <div style="font-size:0.78rem;color:var(--muted);" id="waterConsumedGlasses">0 gelas (250 ml)</div>
+          </div>
+          <div style="background:var(--surface-2);padding:12px;border-radius:10px;border:1px solid var(--border);">
+            <div class="stat-label">Harus Dikonsumsi Lagi</div>
+            <div class="stat-val" style="font-size:1.4rem;color:#38bdf8;" id="waterRemainingVal">2000 ml</div>
+            <div style="font-size:0.78rem;color:var(--muted);" id="waterRemainingStatus">Menuju target harian</div>
+          </div>
+        </div>
+
+        <div class="progress-wrap" style="margin-bottom:14px;">
+          <div class="progress-fill" style="background:linear-gradient(90deg, #06b6d4, #3b82f6);" id="waterProgressBar"></div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Jam Minum</label>
+            <input type="time" id="waterTimeInput" />
+          </div>
+          <div>
+            <label>Jumlah Air (ml)</label>
+            <input type="number" id="waterMlInput" value="250" step="50" min="50" />
+          </div>
+          <div>
+            <label>Target Harian (ml)</label>
+            <input type="number" id="waterTargetInput" value="2000" step="100" min="500" onchange="updateWaterTarget()" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <button class="btn" onclick="addWaterLog()">Catat Minum Air</button>
+          <button class="btn btn-sm btn-secondary" onclick="quickWater(250)">+250 ml Sekarang</button>
+          <button class="btn btn-sm btn-secondary" onclick="quickWater(500)">+500 ml Sekarang</button>
+        </div>
+
+        <div style="font-weight:700;font-size:0.86rem;margin-bottom:8px;">Riwayat Konsumsi Air (<span class="nutDateShort">Tanggal Ini</span>):</div>
+        <div id="waterHistoryList" style="max-height:210px;overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>Catatan Makanan (<span class="nutDateShort">Tanggal Ini</span>)</span>
+        <button class="btn btn-sm btn-secondary" onclick="resetNutritionSelectedDate()">Hapus Catatan Tanggal Ini Saja</button>
+      </div>
+      <div id="foodLogList"></div>
+    </div>
+  </section>
+
+  <!-- 5. WORKOUT REMINDER & BMI CALCULATOR -->
+  <section id="tools" class="section">
+    <div class="section-header">
+      <h1>Workout Reminder & BMI Calculator</h1>
+      <p class="subtitle">Pengingat latihan aktif & riwayat perhitungan BMI serta berat badan per tanggal.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card stat-purple">
+        <div class="card-title">Workout Reminder</div>
+        <div class="form-row">
+          <div>
+            <label>Judul Pengingat</label>
+            <input type="text" id="remTitle" placeholder="Contoh: Latihan Push Day" />
+          </div>
+          <div>
+            <label>Hari</label>
+            <select id="remDay">
+              <option>Setiap Hari</option>
+              <option>Senin</option>
+              <option>Selasa</option>
+              <option>Rabu</option>
+              <option>Kamis</option>
+              <option>Jumat</option>
+              <option>Sabtu</option>
+              <option>Minggu</option>
+            </select>
+          </div>
+          <div>
+            <label>Jam</label>
+            <input type="time" id="remTime" value="17:30" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <button class="btn" onclick="addReminder()">Tambah Pengingat</button>
+          <button class="btn btn-secondary" onclick="requestNotifPermission()">Aktifkan Notifikasi Browser</button>
+        </div>
+        <div id="reminderList"></div>
+      </div>
+
+      <div class="card stat-purple">
+        <div class="card-title">BMI Calculator & Riwayat BMI Per Tanggal</div>
+        <div class="form-row">
+          <div>
+            <label>Berat Badan (kg)</label>
+            <input type="number" id="bmiWeight" placeholder="70" step="0.1" />
+          </div>
+          <div>
+            <label>Tinggi Badan (cm)</label>
+            <input type="number" id="bmiHeight" placeholder="175" step="0.1" />
+          </div>
+          <div>
+            <label>Tanggal Ukur</label>
+            <input type="date" id="bmiDate" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Target Kebugaran</label>
+            <select id="bmiGoal">
+              <option value="maintain">Jaga Berat Badan (Maintenance)</option>
+              <option value="cut">Turunkan Lemak (Cutting -300 kcal)</option>
+              <option value="bulk">Naikkan Massa Otot (Bulking +300 kcal)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="calculateBMI()">Hitung & Simpan ke Riwayat BMI</button>
+
+        <div id="bmiResultBox" style="margin-top:14px;padding:13px;background:var(--surface-2);border-radius:12px;border:1px solid var(--border);">
+          <div style="color:var(--muted);font-size:0.86rem;">Masukkan berat dan tinggi badan untuk melihat hasil & menyimpannya ke riwayat per tanggal.</div>
+        </div>
+
+        <div style="font-weight:700;font-size:0.88rem;margin:14px 0 8px;">Riwayat Pengukuran BMI & Berat Badan:</div>
+        <div id="bmiHistoryList" style="max-height:220px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PROGRESS GALLERY -->
+  <section id="gallery" class="section">
+    <div class="section-header">
+      <h1>Progress Gallery (Riwayat Foto & Berat Per Tanggal)</h1>
+      <p class="subtitle">Dokumentasikan foto perkembangan tubuh, berat badan, dan filter riwayat berdasarkan tanggal.</p>
+    </div>
+
+    <div class="card stat-pink" style="margin-bottom:18px;">
+      <div class="card-title">Unggah Foto Progres Baru</div>
+      <div class="form-row">
+        <div>
+          <label>Foto Progres (JPG/PNG)</label>
+          <input type="file" id="progPhotoInput" accept="image/*" />
+        </div>
+        <div>
+          <label>Tanggal</label>
+          <input type="date" id="progDate" />
+        </div>
+        <div>
+          <label>Berat Badan (kg)</label>
+          <input type="number" id="progWeight" placeholder="70.5" step="0.1" />
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label>Catatan Progres</label>
+        <input type="text" id="progNote" placeholder="Contoh: Minggu ke-4 cutting, lingkar pinggang berkurang 2 cm" />
+      </div>
+      <button class="btn" onclick="addProgressEntry()">Simpan ke Galeri</button>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">
+        <span>Filter Riwayat Galeri</span>
+        <select id="galleryFilterMode" style="width:auto;padding:5px 10px;font-size:0.8rem;" onchange="renderGallery()">
+          <option value="all">Semua Tanggal</option>
+          <option value="selected">Hanya Tanggal Terpilih</option>
+        </select>
+      </div>
+      <div class="history-chips" id="galleryDateChips"></div>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+</main>
+
+<footer>
+  RAFI SPORT v5 — Dashboard, Sheet Report Bulanan (PDF), Custom Workout & Nutrition Log, Database Per Tanggal
+</footer>
+
+<script>
+  const DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const ORDERED_DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+  const MONTHS_ID = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+  const FOOD_PRESETS = {
+    nasi_putih:   { name: "Nasi Putih", category: "Karbohidrat", cal: 130, pro: 2.7, carb: 28.0, fat: 0.3 },
+    nasi_merah:   { name: "Nasi Merah", category: "Karbohidrat", cal: 111, pro: 2.6, carb: 23.0, fat: 0.9 },
+    kentang_rebus:{ name: "Kentang Rebus", category: "Karbohidrat", cal: 87, pro: 1.9, carb: 20.0, fat: 0.1 },
+    oatmeal:      { name: "Oatmeal", category: "Karbohidrat", cal: 389, pro: 16.9, carb: 66.0, fat: 6.9 },
+    roti_gandum:  { name: "Roti Gandum", category: "Karbohidrat", cal: 247, pro: 13.0, carb: 41.0, fat: 3.4 },
+    dada_ayam:    { name: "Dada Ayam Matang", category: "Protein", cal: 165, pro: 31.0, carb: 0.0, fat: 3.6 },
+    telur_rebus:  { name: "Telur Ayam Rebus", category: "Protein", cal: 155, pro: 13.0, carb: 1.1, fat: 11.0 },
+    ikan_salmon:  { name: "Ikan Salmon / Kembung", category: "Protein", cal: 208, pro: 20.0, carb: 0.0, fat: 13.0 },
+    tempe:        { name: "Tempe", category: "Protein", cal: 192, pro: 20.0, carb: 7.6, fat: 11.0 },
+    tahu:         { name: "Tahu Putih", category: "Protein", cal: 76, pro: 8.0, carb: 1.9, fat: 4.8 },
+    brokoli:      { name: "Brokoli / Bayam", category: "Sayuran", cal: 35, pro: 2.4, carb: 7.0, fat: 0.4 },
+    pisang:       { name: "Buah Pisang", category: "Buah", cal: 89, pro: 1.1, carb: 23.0, fat: 0.3 },
+    apel:         { name: "Buah Apel", category: "Buah", cal: 52, pro: 0.3, carb: 14.0, fat: 0.2 },
+    alpukat:      { name: "Buah Alpukat", category: "Buah", cal: 160, pro: 2.0, carb: 8.5, fat: 15.0 }
+  };
+
+  function getLocalTodayISO() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function formatDateID(isoDate) {
+    if (!isoDate) return "-";
+    const parts = isoDate.split("-");
+    if (parts.length !== 3) return isoDate;
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    const dayName = DAYS[d.getDay()];
+    return `${dayName}, ${Number(parts[2])} ${MONTHS_ID[Number(parts[1]) - 1]} ${parts[0]}`;
+  }
+
+  function formatMonthID(ym) {
+    if (!ym || !ym.includes("-")) return ym || "-";
+    const [y, m] = ym.split("-");
+    return `${MONTHS_ID[Number(m) - 1]} ${y}`;
+  }
+
+  const TODAY_ISO = getLocalTodayISO();
+  let selectedDate = TODAY_ISO;
+  let workoutInputMode = "gym";
+  let nutritionInputMode = "preset";
+
+  const defaultState = {
+    userName: "Afii",
+    weeklyTarget: 4,
+    calorieTarget: 2200,
+    waterTargetMl: 2000,
+    dailyLogs: {
+      [TODAY_ISO]: {
+        burnedCalories: 320,
+        workoutCompleted: false,
+        foods: [
+          { id: 1, name: "Nasi Putih (150g)", category: "Karbohidrat", grams: 150, cal: 195, pro: 4.1, carb: 42.0, fat: 0.5 },
+          { id: 2, name: "Dada Ayam Matang (200g)", category: "Protein", grams: 200, cal: 330, pro: 62.0, carb: 0.0, fat: 7.2 }
+        ],
+        waterLogs: [
+          { id: 101, time: "07:30", ml: 500 },
+          { id: 102, time: "12:15", ml: 500 }
+        ]
+      }
+    },
+    schedule: {
+      "Senin": { type: "Latihan", focus: "Push (Chest, Shoulder, Triceps)", time: "17:00", exercises: "Bench Press 4x10, Incline Dumbbell Press 3x12, Shoulder Press 3x10, Tricep Pushdown 3x15" },
+      "Selasa": { type: "Latihan", focus: "Pull (Back, Biceps)", time: "17:00", exercises: "Lat Pulldown 4x12, Barbell Row 4x10, Face Pull 3x15, Dumbbell Curl 3x12" },
+      "Rabu": { type: "Istirahat", focus: "Active Recovery / Rest", time: "18:00", exercises: "Jalan santai 20 menit & stretching ringan" },
+      "Kamis": { type: "Latihan", focus: "Legs & Core", time: "17:00", exercises: "Barbell Squat 4x8, Romanian Deadlift 3x10, Leg Press 3x12, Plank 3x60 detik" },
+      "Jumat": { type: "Latihan", focus: "Upper Body", time: "17:00", exercises: "Pull Up 3x8, Dumbbell Bench Press 3x12, Lateral Raise 4x15, Hammer Curl 3x12" },
+      "Sabtu": { type: "Latihan", focus: "Full Body & Cardio", time: "08:30", exercises: "Kettlebell Swing 4x15, Push Up 3x15, Rowing Machine 15 menit" },
+      "Minggu": { type: "Istirahat", focus: "Active Recovery / Rest", time: "09:00", exercises: "Istirahat penuh untuk pemulihan otot" }
+    },
+    exerciseLogs: [
+      { id: 201, date: TODAY_ISO, mode: "gym", name: "Lat Pulldown", sets: 4, reps: 12, weight: 45, notes: "Form terkontrol penuh" }
+    ],
+    bmiHistory: [
+      { id: 301, date: TODAY_ISO, weight: 70.0, height: 175, bmi: "22.9", category: "Normal (Ideal)", goal: "maintain", targetCal: 2200 }
+    ],
+    reminders: [
+      { id: 1, title: "Sesi Gym Sore", day: "Senin", time: "17:00", active: true },
+      { id: 2, title: "Minum Air & Pre-Workout", day: "Setiap Hari", time: "16:30", active: true }
+    ],
+    gallery: [
+      {
+        id: 1,
+        date: TODAY_ISO,
+        weight: 70.0,
+        note: "Start program latihan di RAFI SPORT!",
+        image: "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs><rect width="100%" height="100%" fill="#192234"/><text x="50%" y="46%" fill="url(#g)" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">RAFI SPORT</text><text x="50%" y="58%" fill="#cbd5e1" font-family="sans-serif" font-size="14" text-anchor="middle">Unggah foto progres pertamamu</text></svg>')
+      }
+    ]
+  };
+
+  function loadInitialState() {
+    const rawV5 = localStorage.getItem("rafi_sport_db_v5");
+    if (rawV5) {
+      try {
+        const parsed = JSON.parse(rawV5);
+        return { ...defaultState, ...parsed };
+      } catch (e) {}
+    }
+    const rawV4 = localStorage.getItem("rafi_sport_db_v4");
+    if (rawV4) {
+      try {
+        const parsed = JSON.parse(rawV4);
+        return { ...defaultState, ...parsed };
+      } catch (e) {}
+    }
+    return defaultState;
+  }
+
+  let state = loadInitialState();
+
+  function getDayLog(dateISO) {
+    if (!state.dailyLogs[dateISO]) {
+      state.dailyLogs[dateISO] = {
+        burnedCalories: 0,
+        workoutCompleted: false,
+        foods: [],
+        waterLogs: []
+      };
+    }
+    return state.dailyLogs[dateISO];
+  }
+
+  // Dual Storage: LocalStorage + IndexedDB
+  const IDB_NAME = "RafiSportDB";
+  const IDB_STORE = "appState";
+
+  function saveToIndexedDB(dataObj) {
+    if (!("indexedDB" in window)) return;
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE);
+      }
+    };
+    req.onsuccess = (e) => {
+      const db = e.target.result;
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).put(dataObj, "mainStateV5");
+    };
+  }
+
+  function restoreFromIndexedDBIfNeeded() {
+    if (!("indexedDB" in window)) return;
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE);
+      }
+    };
+    req.onsuccess = (e) => {
+      const db = e.target.result;
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const getReq = tx.objectStore(IDB_STORE).get("mainStateV5");
+      getReq.onsuccess = () => {
+        if (getReq.result && !localStorage.getItem("rafi_sport_db_v5")) {
+          state = { ...defaultState, ...getReq.result };
+          localStorage.setItem("rafi_sport_db_v5", JSON.stringify(state));
+          renderAll();
+        }
+      };
+    };
+  }
+
+  function saveState() {
+    const serialized = JSON.stringify(state);
+    localStorage.setItem("rafi_sport_db_v5", serialized);
+    saveToIndexedDB(state);
+    const pill = document.getElementById("pwaStatusPill");
+    if (pill) pill.textContent = "DB Tersimpan ✓";
+  }
+
+  // Backup & Restore JSON
+  function exportBackupJSON() {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `rafi-sport-backup-${getLocalTodayISO()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importBackupJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (!imported.dailyLogs && !imported.schedule) {
+          return alert("Format file backup tidak valid.");
+        }
+        state = { ...defaultState, ...imported };
+        saveState();
+        renderAll();
+        alert("Data riwayat RAFI SPORT berhasil dipulihkan!");
+      } catch (err) {
+        alert("Gagal membaca file backup JSON.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // Date Toolbar Logic
+  function syncDateInputs() {
+    document.getElementById("selectedDateInput").value = selectedDate;
+    document.getElementById("logExDate").value = selectedDate;
+    document.getElementById("progDate").value = selectedDate;
+    document.getElementById("bmiDate").value = selectedDate;
+
+    const isToday = selectedDate === getLocalTodayISO();
+    const badge = document.getElementById("selectedDateBadge");
+    badge.textContent = isToday ? "Hari Ini" : formatDateID(selectedDate);
+    badge.className = isToday ? "badge badge-green" : "badge badge-amber";
+
+    document.querySelectorAll(".nutDateShort").forEach(el => {
+      el.textContent = isToday ? "Hari Ini" : selectedDate;
+    });
+    const foodHint = document.getElementById("foodTargetDateText");
+    if (foodHint) foodHint.textContent = formatDateID(selectedDate);
+  }
+
+  function selectHistoryDate(dateISO) {
+    selectedDate = dateISO;
+    syncDateInputs();
+    renderAll();
+  }
+
+  function onChangeSelectedDate() {
+    const val = document.getElementById("selectedDateInput").value;
+    if (!val) return;
+    selectedDate = val;
+    syncDateInputs();
+    renderAll();
+  }
+
+  function jumpToToday() {
+    selectedDate = getLocalTodayISO();
+    syncDateInputs();
+    renderAll();
+  }
+
+  // PWA Service Worker Registration & Install Prompt
+  let deferredPrompt = null;
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById("installBanner").classList.add("show");
+  });
+
+  document.getElementById("installAppBtn").addEventListener("click", async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") document.getElementById("installBanner").classList.remove("show");
+      deferredPrompt = null;
+    } else {
+      alert("Pastikan aplikasi dibuka lewat alamat HTTPS (misalnya setelah upload ke Netlify Drop / Vercel / GitHub Pages), lalu pilih 'Install app' / 'Add to Home Screen' di menu browser.");
+    }
+  });
+
+  function dismissInstallBanner() {
+    document.getElementById("installBanner").classList.remove("show");
+  }
+
+  function getCurrentTimeHHMM() {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  }
+
+  // Live Clock & Date + Greeting
+  function updateLiveClockAndGreeting() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    const s = String(now.getSeconds()).padStart(2, "0");
+
+    const dayName = DAYS[now.getDay()];
+    const dateNum = now.getDate();
+    const monthName = MONTHS_ID[now.getMonth()];
+    const yearNum = now.getFullYear();
+
+    document.getElementById("liveClockDisplay").textContent = `${h}:${m}:${s}`;
+    document.getElementById("liveDateDisplay").textContent = `${dayName}, ${dateNum} ${monthName} ${yearNum}`;
+
+    const hour = now.getHours();
+    let timeGreeting = "Selamat Malam";
+    if (hour >= 4 && hour < 11) timeGreeting = "Selamat Pagi";
+    else if (hour >= 11 && hour < 15) timeGreeting = "Selamat Siang";
+    else if (hour >= 15 && hour < 18) timeGreeting = "Selamat Sore";
+
+    const name = state.userName || "Afii";
+    document.getElementById("greetingHeading").textContent = `${timeGreeting}, ${name}!`;
+  }
+
+  function updateUserName() {
+    const val = document.getElementById("userNameInput").value.trim();
+    if (!val) return;
+    state.userName = val;
+    saveState();
+    updateLiveClockAndGreeting();
+    renderReportSheet();
+  }
+
+  // Navigation + Dynamic Color Theme Switching
+  function switchTab(tabId) {
+    document.body.setAttribute("data-theme", tabId);
+    const themeColors = {
+      dashboard: "#10b981",
+      report: "#06b6d4",
+      planner: "#3b82f6",
+      nutrition: "#f97316",
+      tools: "#a855f7",
+      gallery: "#ec4899"
+    };
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme && themeColors[tabId]) metaTheme.setAttribute("content", themeColors[tabId]);
+
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+    document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === tabId));
+    if (tabId === "report") renderReportSheet();
+  }
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  });
+
+  // Rest Timer
+  let timerSeconds = 90;
+  let timerDefault = 90;
+  let timerInterval = null;
+
+  function updateTimerDisplay() {
+    const m = String(Math.floor(timerSeconds / 60)).padStart(2, "0");
+    const s = String(timerSeconds % 60).padStart(2, "0");
+    document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+  }
+  function setTimer(sec) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerDefault = sec;
+    timerSeconds = sec;
+    document.getElementById("timerToggleBtn").textContent = "Mulai";
+    updateTimerDisplay();
+  }
+  function toggleTimer() {
+    const btn = document.getElementById("timerToggleBtn");
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      btn.textContent = "Lanjut";
+    } else {
+      btn.textContent = "Jeda";
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          btn.textContent = "Mulai";
+          alert("Waktu istirahat selesai! Lanjut set berikutnya.");
+        }
+      }, 1000);
+    }
+  }
+  function resetTimer() { setTimer(timerDefault); }
+
+  function countCompletedSessionsInWeek(dateISO) {
+    const parts = dateISO.split("-");
+    const target = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    const dayOfWeek = (target.getDay() + 6) % 7;
+    const monday = new Date(target);
+    monday.setDate(target.getDate() - dayOfWeek);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    let count = 0;
+    Object.keys(state.dailyLogs).forEach(k => {
+      if (state.dailyLogs[k].workoutCompleted) {
+        const p = k.split("-");
+        const d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+        if (d >= monday && d <= sunday) count++;
+      }
+    });
+    return count;
+  }
+
+  // 1. Dashboard Functions
+  function renderDashboard() {
+    document.getElementById("userNameInput").value = state.userName || "Afii";
+    updateLiveClockAndGreeting();
+
+    const parts = selectedDate.split("-");
+    const selDateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    const dayName = DAYS[selDateObj.getDay()];
+    const dayPlan = state.schedule[dayName] || { type: "Kosong", focus: "Belum diatur", time: "-", exercises: "" };
+    const dayLog = getDayLog(selectedDate);
+
+    const weeklyDone = countCompletedSessionsInWeek(selectedDate);
+    const pct = Math.min(100, Math.round((weeklyDone / state.weeklyTarget) * 100));
+    document.getElementById("dashWeeklyCount").textContent = `${weeklyDone} / ${state.weeklyTarget} Sesi`;
+    document.getElementById("dashWeeklyBar").style.width = `${pct}%`;
+    document.getElementById("dashWeeklyNote").textContent = pct >= 100 ? "Target mingguan tercapai!" : `${pct}% menuju target mingguan`;
+
+    document.getElementById("dashDayNameLabel").textContent = dayName;
+    document.getElementById("dashTodayTitle").textContent = `${dayName}: ${dayPlan.type}`;
+    document.getElementById("dashTodaySub").textContent = `${dayPlan.focus}${dayPlan.time !== "-" ? " • Pukul " + dayPlan.time : ""}`;
+
+    const isToday = selectedDate === getLocalTodayISO();
+    const shortLabel = isToday ? "Hari Ini" : selectedDate;
+    document.getElementById("dashBurnDateLabel").textContent = shortLabel;
+    document.getElementById("dashIntakeDateLabel").textContent = shortLabel;
+    document.getElementById("dashCheckDateLabel").textContent = shortLabel;
+
+    document.getElementById("dashBurnedCal").textContent = `${dayLog.burnedCalories || 0} kcal`;
+
+    const totalCal = Math.round((dayLog.foods || []).reduce((acc, f) => acc + Number(f.cal || 0), 0));
+    const totalWater = (dayLog.waterLogs || []).reduce((acc, w) => acc + Number(w.ml || 0), 0);
+    const remainWater = Math.max(0, state.waterTargetMl - totalWater);
+
+    document.getElementById("dashIntakeSummary").textContent = `${totalCal} kcal • ${totalWater} ml`;
+    document.getElementById("dashWaterRemainSub").textContent = remainWater > 0 ? `Air kurang ${remainWater} ml lagi` : "Target air putih tercapai!";
+
+    const completeBtn = document.getElementById("completeWorkoutBtn");
+    if (dayLog.workoutCompleted) {
+      completeBtn.textContent = "Sudah Selesai ✓ (Batalkan)";
+      completeBtn.className = "btn btn-sm btn-secondary";
+    } else {
+      completeBtn.textContent = "Tandai Selesai";
+      completeBtn.className = "btn btn-sm";
+    }
+
+    const exList = (dayPlan.exercises || "").split(",").map(e => e.trim()).filter(Boolean);
+    document.getElementById("dashTodayExercises").innerHTML = exList.length ? exList.map(ex => `
+      <div class="list-item">
+        <span>${ex}</span>
+        <span class="badge ${dayPlan.type === 'Latihan' ? 'badge-blue' : 'badge-amber'}">${dayPlan.type}</span>
+      </div>
+    `).join("") : `<div style="color:var(--muted);font-size:0.9rem;">Belum ada gerakan dijadwalkan untuk hari ${dayName}. Atur di Workout Planner.</div>`;
+
+    const allDates = new Set([
+      ...Object.keys(state.dailyLogs),
+      ...state.exerciseLogs.map(x => x.date),
+      ...state.bmiHistory.map(x => x.date),
+      ...state.gallery.map(x => x.date)
+    ]);
+    const sortedDates = Array.from(allDates).sort().reverse().slice(0, 6);
+
+    document.getElementById("dashDateActivityLog").innerHTML = sortedDates.length ? sortedDates.map(d => {
+      const log = state.dailyLogs[d] || { burnedCalories: 0, workoutCompleted: false, foods: [], waterLogs: [] };
+      const calIn = Math.round((log.foods || []).reduce((s, f) => s + Number(f.cal || 0), 0));
+      const waterIn = (log.waterLogs || []).reduce((s, w) => s + Number(w.ml || 0), 0);
+      const exCount = state.exerciseLogs.filter(x => x.date === d).length;
+      return `
+        <div class="list-item" style="cursor:pointer;${d === selectedDate ? 'border-color:#10b981;' : ''}" onclick="selectHistoryDate('${d}')">
+          <div>
+            <div style="font-weight:700;">${formatDateID(d)} ${d === getLocalTodayISO() ? '<span class="badge badge-green">Hari Ini</span>' : ''}</div>
+            <div style="font-size:0.8rem;color:var(--muted);">
+              Makan: ${calIn} kcal • Air: ${waterIn} ml • Bakar: ${log.burnedCalories || 0} kcal • Latihan: ${exCount} log
+            </div>
+          </div>
+          <span class="badge ${log.workoutCompleted ? 'badge-green' : 'badge-muted'}">${log.workoutCompleted ? 'Sesi Selesai' : 'Buka'}</span>
+        </div>
+      `;
+    }).join("") : `<div style="color:var(--muted);">Belum ada riwayat tersimpan.</div>`;
+  }
+
+  function addBurnedCal() {
+    const val = parseInt(document.getElementById("quickBurnInput").value, 10);
+    if (!val || val <= 0) return;
+    const dayLog = getDayLog(selectedDate);
+    dayLog.burnedCalories = (dayLog.burnedCalories || 0) + val;
+    document.getElementById("quickBurnInput").value = "";
+    saveState();
+    renderAll();
+  }
+
+  function completeSelectedDateWorkout() {
+    const dayLog = getDayLog(selectedDate);
+    if (!dayLog.workoutCompleted) {
+      dayLog.workoutCompleted = true;
+      dayLog.burnedCalories = (dayLog.burnedCalories || 0) + 250;
+    } else {
+      dayLog.workoutCompleted = false;
+      dayLog.burnedCalories = Math.max(0, (dayLog.burnedCalories || 0) - 250);
+    }
+    saveState();
+    renderAll();
+  }
+
+  // 2. Sheet Report & Monthly PDF Functions
+  function setReportCurrentMonth() {
+    const today = getLocalTodayISO();
+    document.getElementById("reportMonthInput").value = today.slice(0, 7);
+    renderReportSheet();
+  }
+
+  function renderReportSheet() {
+    const monthInput = document.getElementById("reportMonthInput");
+    if (!monthInput.value) monthInput.value = selectedDate.slice(0, 7);
+    const ym = monthInput.value; // "YYYY-MM"
+    const monthLabel = formatMonthID(ym);
+
+    document.getElementById("reportTitleHeading").textContent = `Laporan Bulanan: ${monthLabel}`;
+    document.getElementById("reportUserMeta").textContent = `Atlet / Pengguna: ${state.userName || "Afii"} • Target Kalori: ${state.calorieTarget} kcal/hari • Target Air: ${state.waterTargetMl} ml/hari`;
+    document.getElementById("repSheetMonthLabel").textContent = monthLabel;
+
+    // Kumpulkan semua tanggal pada bulan ym yang memiliki data
+    const dateSet = new Set();
+    Object.keys(state.dailyLogs).forEach(d => { if (d.startsWith(ym)) dateSet.add(d); });
+    state.exerciseLogs.forEach(x => { if (x.date && x.date.startsWith(ym)) dateSet.add(x.date); });
+    state.bmiHistory.forEach(x => { if (x.date && x.date.startsWith(ym)) dateSet.add(x.date); });
+    state.gallery.forEach(x => { if (x.date && x.date.startsWith(ym)) dateSet.add(x.date); });
+
+    const monthDates = Array.from(dateSet).sort();
+    const monthExLogs = state.exerciseLogs.filter(x => x.date && x.date.startsWith(ym));
+
+    let totalSessions = 0;
+    let totalCalIn = 0;
+    let totalPro = 0;
+    let totalCarb = 0;
+    let totalFat = 0;
+    let totalWaterMl = 0;
+    let totalCalBurn = 0;
+    let daysWithFood = 0;
+
+    const rowsHtml = monthDates.map(d => {
+      const log = state.dailyLogs[d] || { burnedCalories: 0, workoutCompleted: false, foods: [], waterLogs: [] };
+      const dayEx = monthExLogs.filter(x => x.date === d);
+      const dayBmi = (state.bmiHistory || []).find(x => x.date === d);
+
+      const calIn = (log.foods || []).reduce((s, f) => s + Number(f.cal || 0), 0);
+      const pro = (log.foods || []).reduce((s, f) => s + Number(f.pro || 0), 0);
+      const carb = (log.foods || []).reduce((s, f) => s + Number(f.carb || 0), 0);
+      const fat = (log.foods || []).reduce((s, f) => s + Number(f.fat || 0), 0);
+      const waterMl = (log.waterLogs || []).reduce((s, w) => s + Number(w.ml || 0), 0);
+      const burn = Number(log.burnedCalories || 0);
+
+      if (log.workoutCompleted) totalSessions++;
+      if (calIn > 0) daysWithFood++;
+      totalCalIn += calIn;
+      totalPro += pro;
+      totalCarb += carb;
+      totalFat += fat;
+      totalWaterMl += waterMl;
+      totalCalBurn += burn;
+
+      return `
+        <tr>
+          <td><strong>${d}</strong><br><span style="font-size:0.74rem;color:var(--muted);">${formatDateID(d).split(",")[0]}</span></td>
+          <td>${log.workoutCompleted ? '<span class="badge badge-green">Selesai ✓</span>' : '<span class="badge badge-muted">-</span>'}</td>
+          <td>${dayEx.length} gerakan</td>
+          <td><strong>${Math.round(calIn)}</strong> kcal</td>
+          <td>${pro.toFixed(1)}g / ${carb.toFixed(1)}g / ${fat.toFixed(1)}g</td>
+          <td>${waterMl} ml</td>
+          <td>${burn} kcal</td>
+          <td>${dayBmi ? `BMI ${dayBmi.bmi} (${dayBmi.weight} kg)` : "-"}</td>
+        </tr>
+      `;
+    }).join("");
+
+    const totalRowHtml = monthDates.length ? `
+      <tr class="total-row">
+        <td>TOTAL BULANAN</td>
+        <td>${totalSessions} Sesi</td>
+        <td>${monthExLogs.length} Log</td>
+        <td>${Math.round(totalCalIn)} kcal</td>
+        <td>${totalPro.toFixed(1)}g / ${totalCarb.toFixed(1)}g / ${totalFat.toFixed(1)}g</td>
+        <td>${(totalWaterMl / 1000).toFixed(2)} L</td>
+        <td>${Math.round(totalCalBurn)} kcal</td>
+        <td>-</td>
+      </tr>
+    ` : `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:16px;">Belum ada data aktivitas tercatat pada bulan ${monthLabel}.</td></tr>`;
+
+    document.getElementById("reportDailySheetBody").innerHTML = rowsHtml + totalRowHtml;
+
+    // Update Summary Cards
+    const avgCalIn = daysWithFood > 0 ? Math.round(totalCalIn / daysWithFood) : 0;
+    const netCal = Math.round(totalCalIn - totalCalBurn);
+
+    document.getElementById("reportActiveDaysBadge").textContent = `${monthDates.length} Hari Aktif Tercatat`;
+    document.getElementById("repTotalWorkouts").textContent = `${totalSessions} Sesi`;
+    document.getElementById("repWorkoutDetailSub").textContent = `${monthExLogs.length} total log gerakan dicatat`;
+    document.getElementById("repTotalCalIn").textContent = `${Math.round(totalCalIn).toLocaleString("id-ID")} kcal`;
+    document.getElementById("repAvgCalInSub").textContent = `Rata-rata ${avgCalIn} kcal/hari aktif makan`;
+    document.getElementById("repTotalCalBurn").textContent = `${Math.round(totalCalBurn).toLocaleString("id-ID")} kcal`;
+    document.getElementById("repNetCalSub").textContent = `Selisih bersih: ${netCal >= 0 ? "+" : ""}${netCal} kcal`;
+    document.getElementById("repTotalWater").textContent = `${(totalWaterMl / 1000).toFixed(2)} L`;
+    document.getElementById("repMacroSub").textContent = `P: ${Math.round(totalPro)}g • K: ${Math.round(totalCarb)}g • L: ${Math.round(totalFat)}g`;
+
+    // Kesimpulan Evaluasi Setiap Kegiatan
+    const monthBmis = (state.bmiHistory || []).filter(x => x.date && x.date.startsWith(ym));
+    let bmiConclusion = "Belum ada pengukuran berat/BMI baru di bulan ini.";
+    if (monthBmis.length >= 2) {
+      const latest = monthBmis[0];
+      const oldest = monthBmis[monthBmis.length - 1];
+      const diffW = (latest.weight - oldest.weight).toFixed(1);
+      bmiConclusion = `Berat badan bergerak dari <strong>${oldest.weight} kg</strong> menjadi <strong>${latest.weight} kg</strong> (${diffW > 0 ? "+" + diffW : diffW} kg), BMI terakhir <strong>${latest.bmi}</strong> (${latest.category}).`;
+    } else if (monthBmis.length === 1) {
+      bmiConclusion = `Tercatat berat badan <strong>${monthBmis[0].weight} kg</strong> dengan BMI <strong>${monthBmis[0].bmi}</strong> (${monthBmis[0].category}).`;
+    }
+
+    const avgWater = monthDates.length > 0 ? Math.round(totalWaterMl / monthDates.length) : 0;
+    document.getElementById("reportConclusionBox").innerHTML = `
+      <div class="list-item" style="margin:0;">
+        <div><strong>1. Kesimpulan Latihan (Workout):</strong> Menyelesaikan <strong>${totalSessions} sesi latihan</strong> dengan total <strong>${monthExLogs.length} catatan gerakan/aktivitas</strong> selama ${monthLabel}.</div>
+      </div>
+      <div class="list-item" style="margin:0;">
+        <div><strong>2. Kesimpulan Nutrisi & Kalori:</strong> Total asupan <strong>${Math.round(totalCalIn)} kcal</strong> (rata-rata <strong>${avgCalIn} kcal/hari</strong> vs target ${state.calorieTarget} kcal/hari) dengan total <strong>${Math.round(totalPro)}g protein</strong>.</div>
+      </div>
+      <div class="list-item" style="margin:0;">
+        <div><strong>3. Kesimpulan Hidrasi (Air Putih):</strong> Total konsumsi air mencapai <strong>${(totalWaterMl / 1000).toFixed(2)} liter</strong> (rata-rata <strong>${avgWater} ml/hari</strong> dari target ${state.waterTargetMl} ml/hari).</div>
+      </div>
+      <div class="list-item" style="margin:0;">
+        <div><strong>4. Kesimpulan Berat Badan & BMI:</strong> ${bmiConclusion}</div>
+      </div>
+    `;
+
+    // Detail Sheet Latihan Bulanan
+    document.getElementById("repExSheetCount").textContent = `${monthExLogs.length} Baris`;
+    document.getElementById("reportExerciseSheetBody").innerHTML = monthExLogs.length ? monthExLogs.map(log => {
+      const isCustom = log.mode === "custom";
+      const detailText = isCustom
+        ? (log.customVolume || "-")
+        : `${log.sets} Set × ${log.reps} Reps`;
+      const loadText = isCustom
+        ? (log.burnCal ? `${log.burnCal} kcal` : "-")
+        : (log.weight ? `${log.weight} kg` : "Bodyweight");
+      const catText = isCustom ? (log.customCategory || "Custom Manual") : "Gym / Beban";
+      return `
+        <tr>
+          <td>${log.date}</td>
+          <td><strong>${log.name}</strong></td>
+          <td><span class="badge ${isCustom ? 'badge-purple' : 'badge-blue'}">${catText}</span></td>
+          <td>${detailText}</td>
+          <td>${loadText}</td>
+          <td>${log.notes || "-"}</td>
+        </tr>
+      `;
+    }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px;">Belum ada log gerakan latihan pada bulan ${monthLabel}.</td></tr>`;
+  }
+
+  function downloadMonthlyReportPDF() {
+    renderReportSheet();
+    window.print();
+  }
+
+  // 3. Planner & Custom Workout Functions
+  function syncCustomPlanFocus() {
+    const sel = document.getElementById("planFocusSelect").value;
+    const customInput = document.getElementById("planFocusCustom");
+    if (sel !== "custom") {
+      customInput.value = sel;
+    } else {
+      customInput.value = "";
+      customInput.focus();
+    }
+  }
+
+  function setWorkoutLogMode(mode) {
+    workoutInputMode = mode;
+    document.getElementById("woModeGymBtn").classList.toggle("active", mode === "gym");
+    document.getElementById("woModeCustomBtn").classList.toggle("active", mode === "custom");
+    document.getElementById("woGymFields").style.display = mode === "gym" ? "grid" : "none";
+    document.getElementById("woCustomFields").style.display = mode === "custom" ? "grid" : "none";
+  }
+
+  function renderPlanner() {
+    const todayName = DAYS[new Date().getDay()];
+    document.getElementById("weekOverview").innerHTML = ORDERED_DAYS.map(day => {
+      const item = state.schedule[day];
+      const isToday = day === todayName;
+      let badgeCls = "badge-muted";
+      if (item.type === "Latihan") badgeCls = "badge-blue";
+      else if (item.type === "Istirahat") badgeCls = "badge-amber";
+
+      return `
+        <div class="day-card ${isToday ? 'today' : ''}">
+          <div class="day-name">${day} ${isToday ? '• Hari Ini' : ''}</div>
+          <div style="margin:4px 0;">
+            <span class="badge ${badgeCls}">${item.type}</span>
+          </div>
+          <div class="day-plan">${item.focus}</div>
+          <div style="font-size:0.76rem;color:#93c5fd;margin-top:4px;">${item.time !== "-" ? "Jam " + item.time : "Belum diatur"}</div>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("plannerDetailList").innerHTML = ORDERED_DAYS.map(day => {
+      const item = state.schedule[day];
+      let badgeCls = "badge-muted";
+      if (item.type === "Latihan") badgeCls = "badge-blue";
+      else if (item.type === "Istirahat") badgeCls = "badge-amber";
+
+      return `
+        <div class="list-item" style="align-items:flex-start;flex-direction:column;">
+          <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:8px;flex-wrap:wrap;">
+            <strong>${day} — ${item.focus}</strong>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="badge ${badgeCls}">${item.type}${item.time !== "-" ? " (" + item.time + ")" : ""}</span>
+              <button class="btn btn-sm btn-secondary" onclick="editWorkoutDay('${day}')">Edit</button>
+              <button class="btn btn-danger" onclick="deleteWorkoutDay('${day}')">Hapus</button>
+            </div>
+          </div>
+          <div style="font-size:0.84rem;color:var(--muted);">${item.exercises || "Belum ada daftar gerakan."}</div>
+        </div>
+      `;
+    }).join("");
+
+    renderExerciseLogs();
+  }
+
+  function saveWorkoutDay() {
+    const day = document.getElementById("planDay").value;
+    const type = document.getElementById("planType").value;
+    const focus = document.getElementById("planFocusCustom").value.trim() || document.getElementById("planFocusSelect").value;
+    const time = document.getElementById("planTime").value || "17:00";
+    const exercises = document.getElementById("planExercises").value.trim() || (type === "Istirahat" ? "Istirahat & peregangan ringan" : "Latihan bebas 45 menit");
+
+    state.schedule[day] = { type, focus, time, exercises };
+    saveState();
+    renderAll();
+    alert(`Jadwal hari ${day} berhasil disimpan!`);
+  }
+
+  function editWorkoutDay(day) {
+    const item = state.schedule[day];
+    document.getElementById("planDay").value = day;
+    if (item.type === "Latihan" || item.type === "Istirahat") {
+      document.getElementById("planType").value = item.type;
+    }
+    document.getElementById("planFocusSelect").value = "custom";
+    document.getElementById("planFocusCustom").value = item.focus || "";
+    document.getElementById("planExercises").value = item.exercises || "";
+    if (item.time && item.time !== "-") document.getElementById("planTime").value = item.time;
+    document.getElementById("planDay").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function deleteWorkoutDay(day) {
+    if (!confirm(`Hapus / kosongkan jadwal latihan hari ${day}?`)) return;
+    state.schedule[day] = { type: "Kosong", focus: "Belum diatur", time: "-", exercises: "" };
+    saveState();
+    renderAll();
+  }
+
+  function renderExerciseLogs() {
+    const uniqueDates = Array.from(new Set(state.exerciseLogs.map(x => x.date))).sort().reverse();
+    document.getElementById("exerciseDateChips").innerHTML = uniqueDates.map(d => `
+      <button class="date-chip ${d === selectedDate ? 'active' : ''}" onclick="selectHistoryDate('${d}')">${d}</button>
+    `).join("");
+
+    const mode = document.getElementById("logExFilterMode").value;
+    const filtered = mode === "selected"
+      ? state.exerciseLogs.filter(x => x.date === selectedDate)
+      : state.exerciseLogs;
+
+    document.getElementById("logExCountBadge").textContent = `${filtered.length} Catatan`;
+    document.getElementById("exerciseLogList").innerHTML = filtered.length ? filtered.map(log => {
+      const isCustom = log.mode === "custom";
+      const mainBadge = isCustom
+        ? `<span class="badge badge-purple" style="margin-left:6px;">${log.customCategory || "Custom"}: ${log.customVolume || "-"}</span>`
+        : `<span class="badge badge-blue" style="margin-left:6px;">${log.sets} Set × ${log.reps} Reps</span>`;
+      const extraBadge = isCustom
+        ? (log.burnCal ? `<span class="badge badge-orange">${log.burnCal} kcal</span>` : "")
+        : (log.weight ? `<span class="badge badge-green">${log.weight} kg</span>` : "");
+
+      return `
+        <div class="list-item">
+          <div>
+            <div style="font-weight:700;">${log.name} ${mainBadge} ${extraBadge}</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:2px;">${formatDateID(log.date)}${log.notes ? " • " + log.notes : ""}</div>
+          </div>
+          <button class="btn btn-danger" onclick="deleteExerciseLog(${log.id})">Hapus</button>
+        </div>
+      `;
+    }).join("") : `<div style="color:var(--muted);font-size:0.9rem;">Belum ada hasil latihan pada tanggal ${selectedDate}.</div>`;
+  }
+
+  function addExerciseLog() {
+    const name = document.getElementById("logExName").value.trim();
+    const date = document.getElementById("logExDate").value || selectedDate;
+    const notes = document.getElementById("logExNotes").value.trim();
+
+    if (!name) return alert("Isi nama gerakan atau jenis olahraganya ya!");
+
+    if (workoutInputMode === "custom") {
+      const customCategory = document.getElementById("logCustomCategory").value.trim() || "Custom Manual";
+      const customVolume = document.getElementById("logCustomVolume").value.trim() || "1 sesi";
+      const burnCal = parseInt(document.getElementById("logCustomBurn").value, 10) || 0;
+
+      state.exerciseLogs.unshift({
+        id: Date.now(),
+        date,
+        mode: "custom",
+        name,
+        customCategory,
+        customVolume,
+        burnCal,
+        notes
+      });
+
+      if (burnCal > 0) {
+        const dayLog = getDayLog(date);
+        dayLog.burnedCalories = (dayLog.burnedCalories || 0) + burnCal;
+      }
+
+      ["logExName", "logCustomCategory", "logCustomVolume", "logCustomBurn", "logExNotes"].forEach(id => document.getElementById(id).value = "");
+    } else {
+      const sets = parseInt(document.getElementById("logExSets").value, 10);
+      const reps = parseInt(document.getElementById("logExReps").value, 10);
+      const weight = parseFloat(document.getElementById("logExWeight").value) || 0;
+      if (!sets || !reps) return alert("Isi jumlah set dan repetisinya (atau pilih Mode Custom / Manual Bebas)!");
+
+      state.exerciseLogs.unshift({
+        id: Date.now(),
+        date,
+        mode: "gym",
+        name,
+        sets,
+        reps,
+        weight,
+        notes
+      });
+      ["logExName", "logExSets", "logExReps", "logExWeight", "logExNotes"].forEach(id => document.getElementById(id).value = "");
+    }
+
+    selectedDate = date;
+    syncDateInputs();
+    saveState();
+    renderAll();
+  }
+
+  function deleteExerciseLog(id) {
+    state.exerciseLogs = state.exerciseLogs.filter(item => item.id !== id);
+    saveState();
+    renderAll();
+  }
+
+  // 4. Nutrition Functions (Preset & Custom Manual)
+  function setNutritionInputMode(mode) {
+    nutritionInputMode = mode;
+    document.getElementById("nutModePresetBtn").classList.toggle("active", mode === "preset");
+    document.getElementById("nutModeManualBtn").classList.toggle("active", mode === "manual");
+    document.getElementById("nutPresetRow").style.display = mode === "preset" ? "grid" : "none";
+    document.getElementById("customPortionBox").style.display = mode === "manual" ? "block" : "none";
+
+    if (mode === "manual") {
+      document.getElementById("foodCalcHint").innerHTML = `Mode <strong>Custom / Catat Manual</strong> aktif untuk tanggal <strong>${formatDateID(selectedDate)}</strong>. Bebas isi nama menu, kalori, dan makronya.`;
+    } else {
+      document.getElementById("foodCalcHint").innerHTML = `Catatan akan disimpan ke tanggal: <strong>${formatDateID(selectedDate)}</strong>.`;
+    }
+  }
+
+  function applyFoodPreset() {
+    const key = document.getElementById("foodPresetSelect").value;
+    if (key === "custom") return;
+    const preset = FOOD_PRESETS[key];
+    document.getElementById("foodName").value = preset.name;
+    document.getElementById("foodCategoryCustom").value = preset.category;
+    recalcFoodByGrams();
+  }
+
+  function recalcFoodByGrams() {
+    const key = document.getElementById("foodPresetSelect").value;
+    if (key === "custom" || !FOOD_PRESETS[key]) return;
+    const preset = FOOD_PRESETS[key];
+    const grams = parseFloat(document.getElementById("foodGrams").value) || 0;
+    const factor = grams / 100;
+
+    const cal = (preset.cal * factor).toFixed(1);
+    const pro = (preset.pro * factor).toFixed(1);
+    const carb = (preset.carb * factor).toFixed(1);
+    const fat = (preset.fat * factor).toFixed(1);
+
+    document.getElementById("foodCal").value = cal;
+    document.getElementById("foodPro").value = pro;
+    document.getElementById("foodCarb").value = carb;
+    document.getElementById("foodFat").value = fat;
+
+    document.getElementById("foodCalcHint").innerHTML = `Otomatis dihitung untuk <strong>${grams}g ${preset.name}</strong> (${selectedDate}): <strong>${cal} kcal</strong> • P <strong>${pro}g</strong> • K <strong>${carb}g</strong> • L <strong>${fat}g</strong>`;
+  }
+
+  function renderNutrition() {
+    const dayLog = getDayLog(selectedDate);
+    const foods = dayLog.foods || [];
+
+    document.getElementById("nutActiveDateLabel").textContent = formatDateID(selectedDate);
+
+    const nutDates = Array.from(new Set([getLocalTodayISO(), ...Object.keys(state.dailyLogs)])).sort().reverse();
+    document.getElementById("nutritionDateChips").innerHTML = nutDates.map(d => {
+      const l = state.dailyLogs[d] || { foods: [], waterLogs: [] };
+      const c = Math.round((l.foods || []).reduce((s, f) => s + Number(f.cal || 0), 0));
+      return `<button class="date-chip ${d === selectedDate ? 'active' : ''}" onclick="selectHistoryDate('${d}')">${d} (${c} kcal)</button>`;
+    }).join("");
+
+    const totals = foods.reduce((acc, f) => {
+      acc.cal += Number(f.cal || 0);
+      acc.pro += Number(f.pro || 0);
+      acc.carb += Number(f.carb || 0);
+      acc.fat += Number(f.fat || 0);
+      return acc;
+    }, { cal: 0, pro: 0, carb: 0, fat: 0 });
+
+    document.getElementById("nutCalVal").textContent = `${Math.round(totals.cal)} kcal`;
+    document.getElementById("nutCalTargetLabel").textContent = state.calorieTarget;
+    const calPct = Math.min(100, Math.round((totals.cal / state.calorieTarget) * 100));
+    document.getElementById("nutCalBar").style.width = `${calPct}%`;
+
+    document.getElementById("nutProVal").textContent = `${totals.pro.toFixed(1)} g`;
+    document.getElementById("nutCarbVal").textContent = `${totals.carb.toFixed(1)} g`;
+    document.getElementById("nutFatVal").textContent = `${totals.fat.toFixed(1)} g`;
+
+    document.getElementById("foodLogList").innerHTML = foods.length ? foods.map(f => `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:600;">${f.name} <span class="badge badge-orange" style="margin-left:6px;">${f.category || "Makanan"}</span></div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-top:2px;">${f.cal} kcal • Protein: ${f.pro}g | Karbo: ${f.carb}g | Lemak: ${f.fat}g</div>
+        </div>
+        <button class="btn btn-danger" onclick="deleteFood(${f.id})">Hapus</button>
+      </div>
+    `).join("") : `<div style="color:var(--muted);font-size:0.9rem;">Belum ada makanan tercatat untuk tanggal ${selectedDate}.</div>`;
+
+    renderWaterTracker();
+  }
+
+  function addFood() {
+    const rawName = document.getElementById("foodName").value.trim();
+    const category = document.getElementById("foodCategoryCustom").value.trim() || "Menu Custom";
+    const cal = parseFloat(document.getElementById("foodCal").value) || 0;
+    const pro = parseFloat(document.getElementById("foodPro").value) || 0;
+    const carb = parseFloat(document.getElementById("foodCarb").value) || 0;
+    const fat = parseFloat(document.getElementById("foodFat").value) || 0;
+
+    if (!rawName || cal <= 0) return alert("Isi nama makanan dan nilai kalorinya ya!");
+
+    let displayName = rawName;
+    let gramsVal = 0;
+
+    if (nutritionInputMode === "manual") {
+      const portionText = document.getElementById("foodCustomPortion").value.trim();
+      if (portionText) displayName = `${rawName} (${portionText})`;
+    } else {
+      gramsVal = parseFloat(document.getElementById("foodGrams").value) || 0;
+      if (gramsVal > 0 && !rawName.includes("g)")) displayName = `${rawName} (${gramsVal}g)`;
+    }
+
+    const dayLog = getDayLog(selectedDate);
+    dayLog.foods.unshift({ id: Date.now(), name: displayName, category, grams: gramsVal, cal, pro, carb, fat });
+
+    document.getElementById("foodPresetSelect").value = "custom";
+    document.getElementById("foodName").value = "";
+    document.getElementById("foodCustomPortion").value = "";
+    document.getElementById("foodCal").value = "";
+    document.getElementById("foodPro").value = "";
+    document.getElementById("foodCarb").value = "";
+    document.getElementById("foodFat").value = "";
+    saveState();
+    renderAll();
+  }
+
+  function deleteFood(id) {
+    const dayLog = getDayLog(selectedDate);
+    dayLog.foods = dayLog.foods.filter(f => f.id !== id);
+    saveState();
+    renderAll();
+  }
+
+  function renderWaterTracker() {
+    const dayLog = getDayLog(selectedDate);
+    const waterLogs = dayLog.waterLogs || [];
+    const target = Number(state.waterTargetMl || 2000);
+    const consumed = waterLogs.reduce((sum, item) => sum + Number(item.ml || 0), 0);
+    const remaining = Math.max(0, target - consumed);
+    const pct = Math.min(100, Math.round((consumed / target) * 100));
+
+    document.getElementById("waterTargetBadge").textContent = `Target: ${target} ml`;
+    document.getElementById("waterTargetInput").value = target;
+    document.getElementById("waterConsumedVal").textContent = `${consumed} ml`;
+    document.getElementById("waterConsumedGlasses").textContent = `Setara ${(consumed / 250).toFixed(1)} gelas (250 ml)`;
+    document.getElementById("waterRemainingVal").textContent = `${remaining} ml`;
+    document.getElementById("waterRemainingStatus").textContent = remaining === 0 ? "Target hari ini terpenuhi!" : `Kurang ± ${Math.ceil(remaining / 250)} gelas lagi`;
+    document.getElementById("waterProgressBar").style.width = `${pct}%`;
+
+    document.getElementById("waterHistoryList").innerHTML = waterLogs.length ? waterLogs.map(w => `
+      <div class="list-item" style="padding:8px 12px;margin-bottom:6px;">
+        <div>
+          <strong>Pukul ${w.time}</strong> — Minum <span style="color:#38bdf8;font-weight:700;">${w.ml} ml</span>
+        </div>
+        <button class="btn btn-danger" onclick="deleteWaterLog(${w.id})">Hapus</button>
+      </div>
+    `).join("") : `<div style="color:var(--muted);font-size:0.86rem;">Belum ada riwayat minum air pada tanggal ${selectedDate}.</div>`;
+  }
+
+  function updateWaterTarget() {
+    const val = parseInt(document.getElementById("waterTargetInput").value, 10);
+    if (!val || val < 250) return;
+    state.waterTargetMl = val;
+    saveState();
+    renderAll();
+  }
+
+  function addWaterLog() {
+    const time = document.getElementById("waterTimeInput").value || getCurrentTimeHHMM();
+    const ml = parseInt(document.getElementById("waterMlInput").value, 10);
+    if (!ml || ml <= 0) return alert("Masukkan jumlah air dalam ml!");
+
+    const dayLog = getDayLog(selectedDate);
+    dayLog.waterLogs.unshift({ id: Date.now(), time, ml });
+    saveState();
+    renderAll();
+  }
+
+  function quickWater(ml) {
+    const dayLog = getDayLog(selectedDate);
+    dayLog.waterLogs.unshift({ id: Date.now(), time: getCurrentTimeHHMM(), ml });
+    saveState();
+    renderAll();
+  }
+
+  function deleteWaterLog(id) {
+    const dayLog = getDayLog(selectedDate);
+    dayLog.waterLogs = dayLog.waterLogs.filter(w => w.id !== id);
+    saveState();
+    renderAll();
+  }
+
+  function resetNutritionSelectedDate() {
+    if (!confirm(`Hapus catatan makanan & air minum khusus untuk tanggal ${selectedDate}? (Tanggal lain tetap aman)`)) return;
+    const dayLog = getDayLog(selectedDate);
+    dayLog.foods = [];
+    dayLog.waterLogs = [];
+    saveState();
+    renderAll();
+  }
+
+  // 5. Reminders & BMI History
+  function renderReminders() {
+    document.getElementById("reminderList").innerHTML = state.reminders.length ? state.reminders.map(r => `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:700;">${r.title}</div>
+          <div style="font-size:0.82rem;color:var(--muted);">${r.day} • Pukul ${r.time}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn btn-sm ${r.active ? '' : 'btn-secondary'}" onclick="toggleReminder(${r.id})">${r.active ? 'Aktif' : 'Nonaktif'}</button>
+          <button class="btn btn-danger" onclick="deleteReminder(${r.id})">Hapus</button>
+        </div>
+      </div>
+    `).join("") : `<div style="color:var(--muted);">Belum ada pengingat latihan.</div>`;
+  }
+
+  function addReminder() {
+    const title = document.getElementById("remTitle").value.trim();
+    const day = document.getElementById("remDay").value;
+    const time = document.getElementById("remTime").value;
+    if (!title || !time) return alert("Isi judul dan jam pengingat!");
+    state.reminders.unshift({ id: Date.now(), title, day, time, active: true });
+    document.getElementById("remTitle").value = "";
+    saveState();
+    renderReminders();
+  }
+
+  function toggleReminder(id) {
+    state.reminders = state.reminders.map(r => r.id === id ? { ...r, active: !r.active } : r);
+    saveState();
+    renderReminders();
+  }
+
+  function deleteReminder(id) {
+    state.reminders = state.reminders.filter(r => r.id !== id);
+    saveState();
+    renderReminders();
+  }
+
+  function requestNotifPermission() {
+    if (!("Notification" in window)) return alert("Browser ini tidak mendukung notifikasi desktop.");
+    Notification.requestPermission().then(perm => {
+      alert(perm === "granted" ? "Notifikasi browser aktif!" : "Izin notifikasi ditolak.");
+    });
+  }
+
+  function renderBMIHistory() {
+    const list = state.bmiHistory || [];
+    document.getElementById("bmiHistoryList").innerHTML = list.length ? list.map(item => `
+      <div class="list-item" style="padding:9px 12px;">
+        <div>
+          <div style="font-weight:700;">BMI ${item.bmi} — ${item.weight} kg / ${item.height} cm</div>
+          <div style="font-size:0.78rem;color:var(--muted);">${formatDateID(item.date)} • ${item.category} • Target ${item.targetCal} kcal</div>
+        </div>
+        <button class="btn btn-danger" onclick="deleteBMIHistory(${item.id})">Hapus</button>
+      </div>
+    `).join("") : `<div style="color:var(--muted);font-size:0.86rem;">Belum ada riwayat BMI tersimpan.</div>`;
+  }
+
+  function calculateBMI() {
+    const w = parseFloat(document.getElementById("bmiWeight").value);
+    const h = parseFloat(document.getElementById("bmiHeight").value);
+    const date = document.getElementById("bmiDate").value || selectedDate;
+    const goal = document.getElementById("bmiGoal").value;
+    if (!w || !h || w <= 0 || h <= 0) return alert("Masukkan berat dan tinggi badan yang valid!");
+
+    const hMeter = h / 100;
+    const bmi = (w / (hMeter * hMeter)).toFixed(1);
+    let category = "Normal (Ideal)";
+    let badgeClass = "badge-green";
+    if (bmi < 18.5) { category = "Underweight (Kurus)"; badgeClass = "badge-blue"; }
+    else if (bmi >= 25 && bmi < 30) { category = "Overweight"; badgeClass = "badge-amber"; }
+    else if (bmi >= 30) { category = "Obesitas"; badgeClass = "badge-red"; }
+
+    let baseCal = Math.round(w * 30);
+    if (goal === "cut") baseCal -= 300;
+    if (goal === "bulk") baseCal += 300;
+
+    state.calorieTarget = baseCal;
+    state.bmiHistory.unshift({
+      id: Date.now(),
+      date,
+      weight: w,
+      height: h,
+      bmi,
+      category,
+      goal,
+      targetCal: baseCal
+    });
+
+    saveState();
+    renderAll();
+
+    document.getElementById("bmiResultBox").innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:1.35rem;font-weight:800;">BMI: ${bmi}</span>
+        <span class="badge ${badgeClass}">${category}</span>
+      </div>
+      <div style="font-size:0.88rem;color:var(--text);">
+        Tersimpan pada <strong>${formatDateID(date)}</strong> • Target Kalori Harian: <strong>${baseCal} kcal</strong>.
+      </div>
+    `;
+  }
+
+  function deleteBMIHistory(id) {
+    state.bmiHistory = state.bmiHistory.filter(x => x.id !== id);
+    saveState();
+    renderAll();
+  }
+
+  // 6. Progress Gallery
+  function renderGallery() {
+    const uniqueDates = Array.from(new Set(state.gallery.map(g => g.date))).sort().reverse();
+    document.getElementById("galleryDateChips").innerHTML = uniqueDates.map(d => `
+      <button class="date-chip ${d === selectedDate ? 'active' : ''}" onclick="selectHistoryDate('${d}')">${d}</button>
+    `).join("");
+
+    const mode = document.getElementById("galleryFilterMode").value;
+    const filtered = mode === "selected"
+      ? state.gallery.filter(g => g.date === selectedDate)
+      : state.gallery;
+
+    document.getElementById("galleryGrid").innerHTML = filtered.length ? filtered.map(item => `
+      <div class="gallery-card">
+        <img src="${item.image}" alt="Progress ${item.date}" />
+        <div class="gallery-meta">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <strong style="color:#f9a8d4;">${item.weight} kg</strong>
+            <span style="font-size:0.78rem;color:var(--muted);">${item.date}</span>
+          </div>
+          <div style="color:var(--muted);font-size:0.82rem;margin-bottom:8px;">${item.note}</div>
+          <button class="btn btn-danger" onclick="deleteGallery(${item.id})">Hapus</button>
+        </div>
+      </div>
+    `).join("") : `<div style="color:var(--muted);font-size:0.9rem;">Belum ada foto progres pada tanggal ${selectedDate}.</div>`;
+  }
+
+  function addProgressEntry() {
+    const fileInput = document.getElementById("progPhotoInput");
+    const date = document.getElementById("progDate").value || selectedDate;
+    const weight = parseFloat(document.getElementById("progWeight").value) || 0;
+    const note = document.getElementById("progNote").value.trim() || "Update progres latihan";
+
+    if (!weight) return alert("Masukkan berat badan saat ini ya!");
+
+    const saveEntry = (imgSrc) => {
+      state.gallery.unshift({ id: Date.now(), date, weight, note, image: imgSrc });
+      selectedDate = date;
+      syncDateInputs();
+      saveState();
+      renderAll();
+      document.getElementById("progPhotoInput").value = "";
+      document.getElementById("progWeight").value = "";
+      document.getElementById("progNote").value = "";
+    };
+
+    if (fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => saveEntry(e.target.result);
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      const placeholder = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#192234"/><text x="50%" y="48%" fill="#f472b6" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">${weight} kg</text><text x="50%" y="60%" fill="#94a3b8" font-family="sans-serif" font-size="14" text-anchor="middle">${date}</text></svg>`);
+      saveEntry(placeholder);
+    }
+  }
+
+  function deleteGallery(id) {
+    state.gallery = state.gallery.filter(g => g.id !== id);
+    saveState();
+    renderAll();
+  }
+
+  function renderAll() {
+    renderDashboard();
+    renderReportSheet();
+    renderPlanner();
+    renderNutrition();
+    renderReminders();
+    renderBMIHistory();
+    renderGallery();
+  }
+
+  // Init
+  document.getElementById("waterTimeInput").value = getCurrentTimeHHMM();
+  document.getElementById("reportMonthInput").value = getLocalTodayISO().slice(0, 7);
+  syncDateInputs();
+  renderAll();
+  restoreFromIndexedDBIfNeeded();
+
+  setInterval(updateLiveClockAndGreeting, 1000);
+</script>
+</body>
+</html>
